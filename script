@@ -1,0 +1,258 @@
+local Players = game:GetService("Players")
+local TweenService = game:GetService("TweenService")
+local UserInputService = game:GetService("UserInputService")
+
+local lp = Players.LocalPlayer
+local char = lp.Character or lp.CharacterAdded:Wait()
+local hrp = char:WaitForChild("HumanoidRootPart")
+
+local montycoon
+
+-- GUI Setup
+local ScreenGui = Instance.new("ScreenGui")
+ScreenGui.Name = "RarityFactoryGUI"
+ScreenGui.Parent = lp.PlayerGui
+ScreenGui.ResetOnSpawn = false
+
+local MainFrame = Instance.new("Frame")
+MainFrame.Size = UDim2.new(0, 400, 0, 500)
+MainFrame.Position = UDim2.new(0.5, -200, 0.5, -250)
+MainFrame.BackgroundColor3 = Color3.fromRGB(10, 10, 15)
+MainFrame.BorderSizePixel = 0
+MainFrame.Parent = ScreenGui
+
+-- Gradient Effect
+local Gradient = Instance.new("UIGradient")
+Gradient.Color = ColorSequence.new({
+    ColorSequenceKeypoint.new(0, Color3.fromRGB(0, 50, 100)),
+    ColorSequenceKeypoint.new(1, Color3.fromRGB(0, 0, 20))
+})
+Gradient.Rotation = 45
+Gradient.Parent = MainFrame
+
+-- Title
+local Title = Instance.new("TextLabel")
+Title.Size = UDim2.new(1, 0, 0, 50)
+Title.Position = UDim2.new(0, 0, 0, 10)
+Title.BackgroundTransparency = 1
+Title.Text = "Rarity Factory Tycoon - lol1k.xyz"
+Title.TextColor3 = Color3.fromRGB(150, 200, 255)
+Title.TextScaled = true
+Title.Font = Enum.Font.SourceSansBold
+Title.Parent = MainFrame
+
+-- Contact Info
+local Contact = Instance.new("TextLabel")
+Contact.Size = UDim2.new(1, 0, 0, 30)
+Contact.Position = UDim2.new(0, 0, 1, -40)
+Contact.BackgroundTransparency = 1
+Contact.Text = "Contact: lol1k.xyz (Discord)"
+Contact.TextColor3 = Color3.fromRGB(100, 150, 200)
+Contact.TextScaled = true
+Contact.Font = Enum.Font.SourceSans
+Contact.Parent = MainFrame
+
+-- Functions
+function MonTycoon()
+    for _, v in pairs(game:GetService("Workspace").Tycoons:GetDescendants()) do
+        if v:IsA("StringValue") and v.Value == lp.Name then
+            montycoon = v.Parent.Name
+        end
+    end
+end
+MonTycoon()
+
+function CollectDrops()
+    for _, v in pairs(game:GetService("Workspace").Tycoons[montycoon].Drops:GetChildren()) do
+        if v:IsA("Part") then
+            v.Transparency = 1
+            v.CanCollide = false
+            v.CFrame = hrp.CFrame
+        end
+    end
+end
+
+function SellDrops()
+    local button = game:GetService("Workspace").Tycoons[montycoon]["Orb Processor"].Model.Deposit.Button
+    firetouchinterest(button, hrp, 0)
+    firetouchinterest(button, hrp, 1)
+end
+
+function BuyButtons()
+    for _, v in pairs(game:GetService("Workspace").Tycoons[montycoon].Buttons:GetDescendants()) do
+        if v:IsA("UnionOperation") then
+            firetouchinterest(v.Parent.Button, hrp, 0)
+            firetouchinterest(v.Parent.Button, hrp, 1)
+        end
+    end
+end
+
+function AutoFinishObby()
+    local button = game:GetService("Workspace").obby["2x Cash for 1 Minute"].Button
+    firetouchinterest(button, hrp, 0)
+    firetouchinterest(button, hrp, 1)
+end
+
+function AutoRebirth()
+    local button = game:GetService("Workspace").Tycoons[montycoon].Rebirth.Button
+    firetouchinterest(button, hrp, 0)
+    firetouchinterest(button, hrp, 1)
+end
+
+-- Create Toggle Button
+local function CreateToggle(name, description, callback, yOffset)
+    local ToggleFrame = Instance.new("Frame")
+    ToggleFrame.Size = UDim2.new(0.9, 0, 0, 50)
+    ToggleFrame.Position = UDim2.new(0.05, 0, 0, yOffset)
+    ToggleFrame.BackgroundColor3 = Color3.fromRGB(20, 20, 30)
+    ToggleFrame.BorderSizePixel = 0
+    ToggleFrame.Parent = MainFrame
+
+    local ToggleGradient = Instance.new("UIGradient")
+    ToggleGradient.Color = ColorSequence.new({
+        ColorSequenceKeypoint.new(0, Color3.fromRGB(0, 80, 120)),
+        ColorSequenceKeypoint.new(1, Color3.fromRGB(0, 20, 60))
+    })
+    ToggleGradient.Parent = ToggleFrame
+
+    local ToggleLabel = Instance.new("TextLabel")
+    ToggleLabel.Size = UDim2.new(0.7, 0, 1, 0)
+    ToggleLabel.BackgroundTransparency = 1
+    ToggleLabel.Text = name .. " (" .. description .. ")"
+    ToggleLabel.TextColor3 = Color3.fromRGB(200, 200, 200)
+    ToggleLabel.TextScaled = true
+    ToggleLabel.TextXAlignment = Enum.TextXAlignment.Left
+    ToggleLabel.Font = Enum.Font.SourceSans
+    ToggleLabel.Parent = ToggleFrame
+
+    local ToggleButton = Instance.new("TextButton")
+    ToggleButton.Size = UDim2.new(0.2, 0, 0.6, 0)
+    ToggleButton.Position = UDim2.new(0.75, 0, 0.2, 0)
+    ToggleButton.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
+    ToggleButton.Text = "OFF"
+    ToggleButton.TextColor3 = Color3.fromRGB(255, 100, 100)
+    ToggleButton.Font = Enum.Font.SourceSansBold
+    ToggleButton.TextScaled = true
+    ToggleButton.Parent = ToggleFrame
+
+    local isOn = false
+
+    ToggleButton.MouseButton1Click:Connect(function()
+        isOn = not isOn
+        ToggleButton.Text = isOn and "ON" or "OFF"
+        ToggleButton.TextColor3 = isOn and Color3.fromRGB(100, 255, 100) or Color3.fromRGB(255, 100, 100)
+        ToggleButton.BackgroundColor3 = isOn and Color3.fromRGB(0, 100, 0) or Color3.fromRGB(50, 50, 50)
+        
+        local tween = TweenService:Create(ToggleButton, TweenInfo.new(0.3), {
+            BackgroundColor3 = isOn and Color3.fromRGB(0, 150, 0) or Color3.fromRGB(50, 50, 50)
+        })
+        tween:Play()
+        
+        callback(isOn)
+    end)
+
+    -- Hover Effect
+    ToggleButton.MouseEnter:Connect(function()
+        local tween = TweenService:Create(ToggleButton, TweenInfo.new(0.2), {
+            BackgroundColor3 = isOn and Color3.fromRGB(0, 180, 0) or Color3.fromRGB(80, 80, 80)
+        })
+        tween:Play()
+    end)
+
+    ToggleButton.MouseLeave:Connect(function()
+        local tween = TweenService:Create(ToggleButton, TweenInfo.new(0.2), {
+            BackgroundColor3 = isOn and Color3.fromRGB(0, 150, 0) or Color3.fromRGB(50, 50, 50)
+        })
+        tween:Play()
+    end)
+end
+
+-- Toggles
+CreateToggle("Auto Collect", "Collect Drops", function(state)
+    getgenv().AutoCollect = state
+    if state then
+        while getgenv().AutoCollect and task.wait() do
+            CollectDrops()
+        end
+    end
+end, 70)
+
+CreateToggle("Auto Sell", "Sell Drops", function(state)
+    getgenv().AutoSell = state
+    if state then
+        while getgenv().AutoSell and task.wait() do
+            SellDrops()
+        end
+    end
+end, 130)
+
+CreateToggle("Auto Buy Buttons", "Buy Buttons", function(state)
+    getgenv().AutoBuyButtons = state
+    if state then
+        while getgenv().AutoBuyButtons and task.wait(0.5) do
+            BuyButtons()
+        end
+    end
+end, 190)
+
+CreateToggle("Auto Rebirth", "Rebirth", function(state)
+    getgenv().AutoRebirth = state
+    if state then
+        while getgenv().AutoRebirth and task.wait(2) do
+            AutoRebirth()
+        end
+    end
+end, 250)
+
+CreateToggle("Auto Obby", "x2 Cash for 1min", function(state)
+    getgenv().AutoObby = state
+    if state then
+        while getgenv().AutoObby and task.wait(1) do
+            AutoFinishObby()
+        end
+    end
+end, 310)
+
+-- Draggable GUI
+local dragging = false
+local dragStart = nil
+local startPos = nil
+
+MainFrame.InputBegan:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.MouseButton1 then
+        dragging = true
+        dragStart = input.Position
+        startPos = MainFrame.Position
+    end
+end)
+
+MainFrame.InputChanged:Connect(function(input)
+    if dragging and input.UserInputType == Enum.UserInputType.MouseMovement then
+        local delta = input.Position - dragStart
+        MainFrame.Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X, startPos.Y.Scale, startPos.Y.Offset + delta.Y)
+    end
+end)
+
+UserInputService.InputEnded:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.MouseButton1 then
+        dragging = false
+    end
+end)
+
+-- Fade In Animation
+MainFrame.BackgroundTransparency = 1
+for _, child in pairs(MainFrame:GetChildren()) do
+    if child:IsA("GuiObject") then
+        child.Visible = false
+    end
+end
+
+local fadeIn = TweenService:Create(MainFrame, TweenInfo.new(0.5), {BackgroundTransparency = 0})
+fadeIn:Play()
+fadeIn.Completed:Connect(function()
+    for _, child in pairs(MainFrame:GetChildren()) do
+        if child:IsA("GuiObject") then
+            child.Visible = true
+        end
+    end
+end)
